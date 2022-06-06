@@ -1,68 +1,89 @@
 import React, {useState} from 'react';
-import { StyleSheet, Text, View, TouchableOpacity,Image } from 'react-native';
-import vibrate from './utils/vibrate';
+import { StyleSheet, Text, View, TouchableOpacity,Image, Alert } from 'react-native';
+
 
 let timer = null;
 let ss = 0;
-let mm = 0;
-let hh = 0;
+let mm ;
+
 
 function App() {
   const [numero, setNumero] = useState(0);
-  const [textoBotao, setTextoBotao] = useState('Vai');
-  const [ultimo, setUltimo] = useState(null);
+  const [textoBotao, setTextoBotao] = useState('Start');
+  const [descansado, setDescansado] = useState(false);
+ const [time,setTime] = useState(25);
 
 
-  function Vai() {
-    setTextoBotao('Pausar');
-    if (timer != null) {
-      clearInterval(timer);
-      timer = null;
-      setTextoBotao('Vai');
-    } else {
-      timer = setInterval(() => {
-        ss++;
-        if (ss == 60) {
-          ss = 0;
-          mm++;
+
+function  StartWork(){
+  setTextoBotao('Pause');
+
+
+  mm = time;
+  if (timer != null) {
+    clearInterval(timer);
+    timer = null;
+    setTextoBotao('Start');
+  } 
+
+  if(timer === null){
+    timer  = setInterval(() => {
+      if (ss == 0) {
+        ss = 60;
+        mm--;
+      }
+      ss--;
+  
+      if(ss == 0 && mm == 0) {
+        if(descansado === true){
+          setDescansado(false);
+          setTime(25);
+          alert('Vamos voltar ao trabalho');
+          Clear();
+        }else{
+          BreakTime();
         }
-
-        if (mm == 60) {
-          mm = 0;
-          hh++;
-        }
-
-
-
+          
+      };
+          
         let format =
-          (hh < 10 ? '0' + hh : hh) + ':' +
-          (mm < 10 ? '0' + mm : mm) + ':' +
-          (ss < 10 ? '0' + ss : ss);
-
-        setNumero(format);
-
-      }, 1000)
-
-    };
-
+        (mm < 10 ? '0' + mm : mm) + ':' +
+        (ss < 10 ? '0' + ss : ss);
+  
+      setNumero(format);
+  
+      
+    },1);}
   }
+ 
 
-  function Limpar() {
+function BreakTime(){
+  setDescansado(true);
+  setTextoBotao('Start');
+  setTime(5);
+  clearInterval(timer)
+  alert('Hora do descanso');
+}
+
+ function Clear(){
 
     if (timer !== null) {
       clearInterval(timer);
       timer = null;
     };
-    console.log(numero);
-    setUltimo(numero);
-    setNumero(0);
-    hh = 0;
     mm = 0;
     ss = 0;
 
+    let format =
+      (mm < 10 ? '0' + mm : mm) + ':' +
+      (ss < 10 ? '0' + ss : ss);
 
-    setTextoBotao('Vai');
-  }
+    setNumero(format);
+
+    setTextoBotao('Start');
+
+ }
+
 
   return (
     <View style={styles.container}>
@@ -73,19 +94,14 @@ function App() {
 
       <View style={styles.btnArea}>
 
-        <TouchableOpacity style={styles.btn} onPress={Vai}>
+        <TouchableOpacity style={styles.btn} onPress={StartWork}>
           <Text style={styles.btnText}>{textoBotao}</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.btn} onPress={Limpar}>
-          <Text style={styles.btnText}>Limpar</Text>
+        <TouchableOpacity style={styles.btn} onPress={Clear}>
+          <Text style={styles.btnText}>Clear</Text>
         </TouchableOpacity>
       </View>
-
-
-    
-
-
     </View>
   )
 };
